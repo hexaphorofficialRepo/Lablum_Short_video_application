@@ -1,0 +1,26 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.lablum.shorts_video_provider",
+      "sha256_cert_fingerprints": [
+        "AB:FD:21:4B:6C:CA:2A:EF:1D:BD:B2:11:4E:07:D0:C4:32:EA:E9:B5:BD:54:39:E7:32:93:AE:1C:37:3B:94:FB"
+      ]
+    }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.lablum.entertainment",
+      "sha256_cert_fingerprints": [
+        "77:29:7E:C1:A3:37:2C:15:CA:4D:54:A3:31:A5:B7:E3:C1:70:FC:64:E4:89:26:1D:E2:3F:93:0D:35:5D:92:6B"
+      ]
+    }
+  }
+]
