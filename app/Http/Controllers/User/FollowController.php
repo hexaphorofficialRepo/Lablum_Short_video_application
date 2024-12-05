@@ -77,6 +77,8 @@ class FollowController extends Controller
 
 
 
+
+
 // public function followingList($user_id)
 // {
 //     // Find the user by user_id
@@ -88,7 +90,7 @@ class FollowController extends Controller
 
 //     // Retrieve the following list for the user with selected fields
 //     $followingList = $user->following()->with(['following' => function($query) {
-//         $query->select('user_id', 'username', 'fname', 'lname', 'user_dp','fcm_token');
+//         $query->select('user_id', 'username', 'fname', 'lname', 'user_dp', 'fcm_token');
 //     }])->get();
 
 //     // Extracting only specific fields for each follower
@@ -125,10 +127,20 @@ class FollowController extends Controller
 //         $verifiedFollowers->push($follower);
 //     }
 
-//     // Suggested users who are not followed by the user
+//     // Retrieve users who have blocked the current user
+//     $blockedByUserIds = $user_id ? Blockuser::where('block_id', $user_id)->pluck('user_id') : collect();
+
+//     // Retrieve users blocked by the current user
+//     $blockedUsersByCurrentUser = $user_id ? Blockuser::where('user_id', $user_id)->pluck('block_id') : collect();
+
+//     // Combine both sets of blocked users
+//     $blockedUsers = $blockedByUserIds->merge($blockedUsersByCurrentUser);
+
+//     // Suggested users who are not followed by the user and are not blocked or blocked by the user
 //     $suggestedUsers = User::whereNotIn('user_id', $verifiedFollowers->pluck('user_id'))
 //         ->where('user_id', '!=', $user_id)
-//         ->get(['user_id', 'username', \DB::raw("CONCAT(fname, ' ', lname) as fullname"), 'user_dp','fcm_token'])
+//         ->whereNotIn('user_id', $blockedUsers) // Exclude blocked or blocking users
+//         ->get(['user_id', 'username', \DB::raw("CONCAT(fname, ' ', lname) as fullname"), 'user_dp', 'fcm_token'])
 //         ->map(function ($user) {
 //             $user->user_dp = $user->user_dp ? asset("storage/profile_pic/{$user->user_id}/{$user->user_dp}") : null;
 //             $verification = Verify::where('user_id', $user->user_id)->first();
@@ -154,7 +166,7 @@ class FollowController extends Controller
 //     ]);
 // }
 
-public function followingList($user_id)
+public function followingList($user_id, Request $request)
 {
     // Find the user by user_id
     $user = User::find($user_id);
@@ -163,10 +175,19 @@ public function followingList($user_id)
         return response()->json(['status' => 'error', 'msg' => 'User not found'], 404);
     }
 
+    // Get pagination parameters
+    $perPage = $request->input('per_page', 10); // Default items per page
+    $page = $request->input('page', 1); // Default page number
+    $offset = ($page - 1) * $perPage;
+
     // Retrieve the following list for the user with selected fields
-    $followingList = $user->following()->with(['following' => function($query) {
-        $query->select('user_id', 'username', 'fname', 'lname', 'user_dp', 'fcm_token');
-    }])->get();
+    $followingList = $user->following()
+        ->with(['following' => function ($query) {
+            $query->select('user_id', 'username', 'fname', 'lname', 'user_dp', 'fcm_token');
+        }])
+        ->skip($offset)
+        ->take($perPage)
+        ->get();
 
     // Extracting only specific fields for each follower
     $uniqueFollowersArray = $followingList->map(function ($item) {
@@ -175,7 +196,7 @@ public function followingList($user_id)
                 'user_id' => $follower->user_id,
                 'username' => $follower->username,
                 'fcm_token' => $follower->fcm_token,
-                'fullname' => $follower->fname.' '.$follower->lname,
+                'fullname' => $follower->fname . ' ' . $follower->lname,
                 'user_dp' => $follower->user_dp ? asset("storage/profile_pic/{$follower->user_id}/{$follower->user_dp}") : null,
             ];
         });
@@ -184,21 +205,14 @@ public function followingList($user_id)
     // Count of followers and following for the user
     $followersCount = $user->followers()->count();
     $followingCount = $user->following()->count();
-    unset($user);
 
     // Check verification status for each user in the following list
     $verifiedFollowers = collect();
     foreach ($uniqueFollowersArray as $follower) {
         $verification = Verify::where('user_id', $follower['user_id'])->first();
-        if ($verification) {
-            if ($verification->status == 1) {
-                $follower['official_status'] = 1; // Status is approved
-            } else {
-                $follower['official_status'] = 2; // Status is pending
-            }
-        } else {
-            $follower['official_status'] = 0; // Status not available (user not verified)
-        }
+        $follower['official_status'] = $verification
+            ? ($verification->status == 1 ? 1 : 2)
+            : 0; // Status: 1=approved, 2=pending, 0=not verified
         $verifiedFollowers->push($follower);
     }
 
@@ -211,23 +225,19 @@ public function followingList($user_id)
     // Combine both sets of blocked users
     $blockedUsers = $blockedByUserIds->merge($blockedUsersByCurrentUser);
 
-    // Suggested users who are not followed by the user and are not blocked or blocked by the user
+    // Suggested users who are not followed by the user and are not blocked or blocking the user
     $suggestedUsers = User::whereNotIn('user_id', $verifiedFollowers->pluck('user_id'))
         ->where('user_id', '!=', $user_id)
-        ->whereNotIn('user_id', $blockedUsers) // Exclude blocked or blocking users
+        ->whereNotIn('user_id', $blockedUsers)
+        ->skip($offset)
+        ->take($perPage)
         ->get(['user_id', 'username', \DB::raw("CONCAT(fname, ' ', lname) as fullname"), 'user_dp', 'fcm_token'])
         ->map(function ($user) {
             $user->user_dp = $user->user_dp ? asset("storage/profile_pic/{$user->user_id}/{$user->user_dp}") : null;
             $verification = Verify::where('user_id', $user->user_id)->first();
-            if ($verification) {
-                if ($verification->status == 1) {
-                    $user['official_status'] = 1; // Status is approved
-                } else {
-                    $user['official_status'] = 2; // Status is pending
-                }
-            } else {
-                $user['official_status'] = 0; // Status not available (user not verified)
-            }
+            $user['official_status'] = $verification
+                ? ($verification->status == 1 ? 1 : 2)
+                : 0; // Status: 1=approved, 2=pending, 0=not verified
             return $user;
         });
 
@@ -244,8 +254,61 @@ public function followingList($user_id)
 
 
 
+// public function followerList($user_id)
+// {
+//     // Find the user by user_id
+//     $user = User::find($user_id);
 
-public function followerList($user_id)
+//     if (!$user) {
+//         return response()->json(['status' => 'error', 'msg' => 'User not found'], 404);
+//     }
+
+//     // Retrieve the follower list for the user with selected fields
+//     $followerList = $user->followers()->with(['user' => function($query) {
+//         $query->select('user_id', 'username', 'fname', 'lname', 'user_dp','fcm_token');
+//     }])->get();
+
+//     // Extracting only specific fields for each follower and adding profile picture URL
+//     $formattedFollowerList = $followerList->map(function ($follower) use ($user) {
+//         $isFollowingBack = $user->following()->where('follower_id', $follower->user->user_id)->exists();
+        
+//         // Check verification status for the follower
+//         $verification = Verify::where('user_id', $follower->user->user_id)->first();
+//         if ($verification) {
+//             if ($verification->status == 1) {
+//                 $officialStatus = 1; // Status is approved
+//             } else {
+//                 $officialStatus = 2; // Status is pending
+//             }
+//         } else {
+//             $officialStatus = 0; // Status not available (user not verified)
+//         }
+
+//         return [
+//             'user_id' => $follower->user->user_id,
+//             'username' => $follower->user->username,
+//             'fcm_token' => $follower->user->fcm_token,
+//             'full_name' => $follower->user->fname . ' ' . $follower->user->lname,
+//             'user_dp' => $follower->user->user_dp ? asset("storage/profile_pic/{$follower->user->user_id}/{$follower->user->user_dp}") : null,
+//             'status' => $isFollowingBack ? true : false,
+//             'official_status' => $officialStatus,
+//         ];
+//     });
+
+//     // Count of followers and following for the user
+//     $followersCount = $user->followers()->count();
+//     $followingCount = $user->following()->count();
+
+//     return response()->json([
+//         'status' => true,
+//         'msg' => 'Success',
+//         'follower_list' => $formattedFollowerList,
+//         'followers_count' => $followersCount,
+//         'following_count' => $followingCount,
+//     ]);
+// }
+
+public function followerList($user_id, Request $request)
 {
     // Find the user by user_id
     $user = User::find($user_id);
@@ -254,26 +317,29 @@ public function followerList($user_id)
         return response()->json(['status' => 'error', 'msg' => 'User not found'], 404);
     }
 
+    // Get pagination parameters
+    $perPage = $request->input('per_page', 10); // Default items per page
+    $page = $request->input('page', 1); // Default page number
+    $offset = ($page - 1) * $perPage;
+
     // Retrieve the follower list for the user with selected fields
-    $followerList = $user->followers()->with(['user' => function($query) {
-        $query->select('user_id', 'username', 'fname', 'lname', 'user_dp','fcm_token');
-    }])->get();
+    $followerList = $user->followers()
+        ->with(['user' => function ($query) {
+            $query->select('user_id', 'username', 'fname', 'lname', 'user_dp', 'fcm_token');
+        }])
+        ->skip($offset)
+        ->take($perPage)
+        ->get();
 
     // Extracting only specific fields for each follower and adding profile picture URL
     $formattedFollowerList = $followerList->map(function ($follower) use ($user) {
         $isFollowingBack = $user->following()->where('follower_id', $follower->user->user_id)->exists();
-        
+
         // Check verification status for the follower
         $verification = Verify::where('user_id', $follower->user->user_id)->first();
-        if ($verification) {
-            if ($verification->status == 1) {
-                $officialStatus = 1; // Status is approved
-            } else {
-                $officialStatus = 2; // Status is pending
-            }
-        } else {
-            $officialStatus = 0; // Status not available (user not verified)
-        }
+        $officialStatus = $verification
+            ? ($verification->status == 1 ? 1 : 2)
+            : 0; // Status: 1=approved, 2=pending, 0=not verified
 
         return [
             'user_id' => $follower->user->user_id,
@@ -298,8 +364,6 @@ public function followerList($user_id)
         'following_count' => $followingCount,
     ]);
 }
-
-
 
 
 }

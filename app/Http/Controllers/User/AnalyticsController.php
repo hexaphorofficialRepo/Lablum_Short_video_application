@@ -322,40 +322,81 @@ class AnalyticsController extends Controller
 }
 
 
+// public function getTopPostsByViews(Request $request)
+// {
+//     // Validate the request parameters
+//     $request->validate([
+//         'user_id' => 'required|integer|exists:users,user_id',
+//     ]);
+
+//     $userId = $request->input('user_id');
+
+//     // Get all posts for the user
+//     $posts = Post::where('user_id', $userId)
+//         ->get();
+
+//     // Calculate view counts for each post
+//     $postsWithViews = $posts->map(function ($post) {
+//         // Count views directly from the View model
+//         $viewCount = View::where('post_id', $post->id)->count();
+
+//         return [
+//             'post_id' => $post->id,
+//             'title' => $post->title,
+//             'thumbnail' => $post->thumbnail = asset("storage/thumbnail/{$post->thumbnail}"),
+           
+//             'view_count' => $viewCount, // Calculate the view count
+           
+//         ];
+//     });
+
+//     // Sort the posts by view count in descending order and take the top 10
+// $topPosts = $postsWithViews->sortByDesc('view_count');
+
+//     return response()->json(['posts' => $topPosts]);
+// }
+
 public function getTopPostsByViews(Request $request)
 {
     // Validate the request parameters
     $request->validate([
         'user_id' => 'required|integer|exists:users,user_id',
+        'offset' => 'nullable|integer|min:0', // For pagination offset
+        'limit' => 'nullable|integer|min:1|max:50', // For pagination limit (max 50 items)
     ]);
 
     $userId = $request->input('user_id');
+    $offset = $request->input('offset', 0); // Default offset is 0
+    $limit = $request->input('limit', 10); // Default limit is 10
 
     // Get all posts for the user
-    $posts = Post::where('user_id', $userId)
-        ->get();
+    $posts = Post::where('user_id', $userId)->get();
 
     // Calculate view counts for each post
     $postsWithViews = $posts->map(function ($post) {
-        // Count views directly from the View model
         $viewCount = View::where('post_id', $post->id)->count();
 
         return [
             'post_id' => $post->id,
             'title' => $post->title,
-            'thumbnail' => $post->thumbnail = asset("storage/thumbnail/{$post->thumbnail}"),
-           
-            'view_count' => $viewCount, // Calculate the view count
-           
+            'thumbnail' => asset("storage/thumbnail/{$post->thumbnail}"),
+            'view_count' => $viewCount,
         ];
     });
 
-    // Sort the posts by view count in descending order and take the top 10
-$topPosts = $postsWithViews->sortByDesc('view_count');
+    // Sort the posts by view count in descending order
+    $sortedPosts = $postsWithViews->sortByDesc('view_count')->values();
 
-    return response()->json(['posts' => $topPosts]);
+    // Apply offset and limit for pagination
+    $paginatedPosts = $sortedPosts->slice($offset, $limit)->values();
+
+    // Return the response with pagination details
+    return response()->json([
+        'total_count' => $sortedPosts->count(), // Total number of posts
+        'offset' => $offset,
+        'limit' => $limit,
+        'posts' => $paginatedPosts,
+    ]);
 }
-
-
 
 }

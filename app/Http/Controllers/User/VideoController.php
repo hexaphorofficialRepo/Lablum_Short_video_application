@@ -66,7 +66,7 @@ public function Poststore(Request $request, $user_id)
     $validator = \Validator::make($request->all(), [
         'title' => 'required',
         'length' => 'required|numeric|min:5|max:180', // Restricts the length to be between 0 and 180 seconds
-        'video' => 'required|mimes:mp4|max:110000',
+        'video' => 'required|mimes:mp4',
         'thumbnail' => 'required|image|mimes:jpeg,png,jpg,gif', 
         'tags' => 'nullable|string'
     ]);
