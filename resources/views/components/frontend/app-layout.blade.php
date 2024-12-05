@@ -4,7 +4,7 @@
 <head>
    <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <script>
+    {{-- <script>
         // Disable right-click context menu
         document.addEventListener('contextmenu', function (e) {
             e.preventDefault();
@@ -19,7 +19,7 @@
                 return false;
             }
         };
-    </script>
+    </script> --}}
     
     
     
@@ -36,6 +36,7 @@
 <meta property="og:description" content=Laugh, learn & be entertained with Lablum's endless stream of short videos! Discover & share funny clips, life hacks & more in a vibrant community.>
 <meta property="og:type" content=website>
 <meta property="og:image" content=https://lablum.com/assets/images/all-img/lablum_logo.png>
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
 
 <meta name="twitter:card" content="summary">

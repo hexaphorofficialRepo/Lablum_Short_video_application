@@ -26,6 +26,7 @@ use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\advertisment\AddplanController;
 use App\Http\Controllers\advertisment\AddsController;
 use App\Http\Controllers\advertisment\BanneraddsController;
+use App\Http\Controllers\advertisment\ForgetpasswordController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\frontend\PageController;
 use App\Http\Controllers\OrganizationController;
@@ -398,7 +399,17 @@ Route::get('/delete-account-request',[DeleteaccountController::class,'accountDel
 // PAYMENT SUCCESS
 Route::get('/Thankyou-Payment-Success',[PageController::class,'payment_success'])->name('payment.success');
 
+// Advertiser Forget Password
 
+
+Route::get('/verify-send-update-poassword-link',[ForgetpasswordController::class,'viewemailPage'])->name('email.page.password');
+Route::post('/send-reset-link', [ForgetpasswordController::class, 'sendResetLink'])->name('password.send-reset-link');
+
+// Route to display the reset password form with token and email in the query string
+Route::get('/reset-password/{token}', [ForgetpasswordController::class, 'showResetForm'])->name('password.reset');
+
+// Route to update the password
+Route::post('/reset-password', [ForgetpasswordController::class, 'resetPassword'])->name('password.update');
 
 
 

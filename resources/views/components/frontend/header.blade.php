@@ -257,18 +257,19 @@
                                                 <div class="form-group" style="text-align: center;">
                                                     <button type="submit" class="btn">Login</button>
                                                 </div>
-                                                <div class="form-group">
-                                                    <!--<button type="button" class="forget-btn"-->
-                                                    <!--    style="font-size: 14px;">Forgot Password?</button>-->
+                                                <div class="form-group" style="    display: flex;gap: 10px;text-align: center;flex-wrap: wrap;">
+                                                    
                                                     <button type="button" class="signup-btn"
                                                         style="font-size: 14px;">Sign Up</button>
+                                                      <div class="forget-btn"> <a href="{{route('email.page.password')}}"style="font-size: 14px; color:#fff;">Forgot
+                                                            Password?</a></div> 
                                                 </div>
                                             </form>
                                         </div>
                                     </div>
 
 
-                                 
+
 
 
 
@@ -358,100 +359,7 @@
 
                     <!-- Blue tick Modal (Mobile) -->
 
-                    <div id="myModalMobBlue" class="modal">
-                        <div class="modal-overlay"></div>
-                        <div class="modal-content">
-                            <span class="Blue-close" style="display: flex;justify-content: end;">&times;</span>
-                            <!-- Your sign up form goes here -->
-                            <form id="signupFormMob">
-
-
-                                <h4 style="margin-bottom: 20px;text-align: center;">Get your Account Verified:</h4>
-
-                                <div class="row">
-                                    <div class="col-lg-6 col-md-12">
-                                        <div class="form-group">
-                                            <label for="fullname">Name:</label>
-                                            <input type="text" name="fullname" class="form-control"
-                                                placeholder="full name">
-                                        </div>
-                                    </div>
-
-
-
-
-                                    <div class="col-lg-6 col-md-12">
-                                        <div class="form-group">
-                                            <label for="Name">Username:</label>
-                                            <input type="text" name="Org" class="form-control"
-                                                placeholder="Username">
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <div class="row">
-                                    <div class="col-lg-6 col-md-12">
-                                        <div class="form-group">
-                                            <label for="type">Mobile Number:</label>
-                                            <input type="text" name="Number" class="form-control"
-                                                placeholder="Mobile Number">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 col-md-12">
-                                        <div class="form-group">
-                                            <label for="Email">Email:</label>
-                                            <input type="email" name="Email" class="form-control"
-                                                placeholder="Email">
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <div class="row" style="margin-bottom: 30px;">
-                                    <div class="col-lg-6">
-                                        <label for="Doc">Documents:</label>
-                                        <input type="file" name="Doc" id="fileUpload1" class="form-control"
-                                            placeholder="Documents" multiple onchange="displayUploadedFiles()">
-                                    </div>
-                                </div>
-                                <div id="uploadedFiles1"></div>
-
-                                <script>
-                                    function displayUploadedFiles() {
-                                        var files = document.getElementById("fileUpload1").files;
-                                        var uploadedFilesDiv = document.getElementById("uploadedFiles1");
-                                        uploadedFilesDiv.innerHTML = "";
-
-                                        for (var i = 0; i < files.length; i++) {
-                                            var file = files[i];
-                                            var fileReader = new FileReader();
-
-                                            fileReader.onload = function(event) {
-                                                var img = document.createElement("img");
-                                                img.src = event.target.result;
-                                                img.style.maxWidth = "100px"; // Adjust as needed
-                                                img.style.maxHeight = "100px"; // Adjust as needed
-                                                uploadedFilesDiv.appendChild(img);
-                                            };
-
-                                            fileReader.readAsDataURL(file);
-                                        }
-                                    }
-                                </script>
-
-
-
-                                <div class="form-group" style="text-align: center;">
-                                    <a href="updateInfo.html">
-                                        <button type="button" class="btn btn-primary">Submit</button>
-                                    </a>
-                                </div>
-
-
-                            </form>
-                        </div>
-                    </div>
+                  
 
 
 
@@ -483,134 +391,19 @@
                                 <div class="form-group" style="text-align: center;">
                                     <button type="submit" class="btn">Login</button>
                                 </div>
-                                <div class="form-group">
-                                    <button type="button" class="forget-btn" style="font-size: 14px;">Forgot
-                                        Password?</button>
-                                    <button type="button" class="signup-btn siggnup-btn "
-                                        style="font-size: 14px;">Sign Up</button>
-                                </div>
+                              
                             </form>
+                            <div class="form-group">
+                                <a href="{{route('email.page.password')}}"  style="font-size: 14px;">Forgot
+                                    Password?</a>
+                                <button type="button" class="signup-btn siggnup-btn "
+                                    style="font-size: 14px;">Sign Up</button>
+                            </div>
                         </div>
                     </div>
 
 
-                    <!-- Modal for Sign Up -->
-                    <div id="signupModalMob" class="modal">
-                        <div class="modal-overlay"></div>
-                        <div class="modal-content">
-                            <span class="close" style="display: flex;justify-content: end;">&times;</span>
-                            <!-- Your sign up form goes here -->
-                            <form id="signupFormMob">
-                                <h2>Sign Up</h2>
-
-                                <h4 style="margin-bottom: 20px;text-align: center;">Create your Business Account :</h4>
-
-                                <div class="row">
-                                    <div class="col-lg-6 col-md-12">
-                                        <div class="form-group">
-                                            <label for="fullname">Name:</label>
-                                            <input type="text" name="fullname" class="form-control"
-                                                placeholder="full name">
-                                        </div>
-                                    </div>
-
-
-
-
-                                    <div class="col-lg-6 col-md-12">
-                                        <div class="form-group">
-                                            <label for="Name">Business Name:</label>
-                                            <input type="text" name="Org" class="form-control"
-                                                placeholder="Business Name">
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <div class="row">
-                                    <div class="col-lg-6 col-md-12">
-                                        <div class="form-group">
-                                            <label for="type">Business type:</label>
-                                            <input type="text" name="type" class="form-control"
-                                                placeholder="Business type">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 col-md-12">
-                                        <div class="form-group">
-                                            <label for="Email">Email:</label>
-                                            <input type="email" name="Email" class="form-control"
-                                                placeholder="Email">
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <div class="row">
-                                    <div class="col-lg-6 col-md-12">
-                                        <div class="form-group">
-                                            <label for="Mob">Mobile Number:</label>
-                                            <input type="text" name="Mob" class="form-control"
-                                                placeholder=" Mobile Number " style="padding: 10px;">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-6 col-md-12">
-                                        <div class="form-group">
-                                            <label for="Web">Website URL:</label>
-                                            <input type="text" name="Web" class="form-control"
-                                                placeholder="Website URL">
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                <div class="row">
-                                    <div class="col-lg-6 col-md-12">
-                                        <div class="form-group">
-                                            <label>Password</label>
-                                            <div class="position-relative">
-                                                <input type="password" class="form-control" name="password"
-                                                    value="" placeholder="Password" id="pass-Mob">
-                                                <span class="eye-icon-box">
-                                                    <span class="eye-icon">
-                                                        <i class="fas fa-eye" id="toggle-password-Mob"></i>
-                                                    </span>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-lg-6 col-md-12">
-                                        <div class="form-group">
-                                            <label>Confirm Password</label>
-                                            <div class="position-relative">
-                                                <input type="password" class="form-control" name="password"
-                                                    value="" placeholder="Password"
-                                                    id="password-input-con-Mob">
-                                                <span class="eye-icon-box">
-                                                    <span class="eye-icon">
-                                                        <i class="fas fa-eye" id="toggleCon-password-Mob"></i>
-                                                    </span>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-
-
-
-                                <div class="form-group" style="text-align: center;">
-                                    <a href="updateInfo.html">
-                                        <button type="button" class="btn btn-primary">Signn Up</button>
-                                    </a>
-                                </div>
-
-
-                            </form>
-                        </div>
-                    </div>
+                  
 
 
 
@@ -625,6 +418,139 @@
                     <!-- End Mobile Menu -->
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="signupModal" class="modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <span class="close" style="display: flex;justify-content: end;">&times;</span>
+            <!-- Your sign up form goes here -->
+            <form id="signupForm" action="{{ route('frontend.adds.register') }}" method="POST">
+                @csrf
+                <h2>Sign Up</h2>
+
+                <h4 style="margin-bottom: 20px;text-align: center;">Create your
+                    Business Account :</h4>
+
+                <div class="row">
+                    <div class="col-lg-6 col-md-12">
+                        <div class="form-group">
+                            <label for="fullname">Name:</label>
+                            <input type="text" id="fullname" name="fullname" class="form-control"
+                                placeholder="full name">
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="col-lg-6 col-md-12">
+                        <div class="form-group">
+                            <label for="Name">Business Name:</label>
+                            <input type="text" id="business_name" name="business_name" class="form-control"
+                                placeholder="Business Name">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-lg-6 col-md-12">
+                        <div class="form-group">
+                            <label for="type">Business type:</label>
+                            <select type="text" id="business_type" name="business_type" class="form-control"
+                                placeholder="Business type">
+                                <option value=""> Select Business Type</option>
+                                @foreach ($addcategories as $category)
+                                    <option value="{{ $category->id }}"> {{ $category->title }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="form-group">
+                            <label for="Email">Email:</label>
+                            <input type="email" id="Email" name="email" class="form-control"
+                                placeholder="Email">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-lg-6 col-md-12">
+                        <div class="form-group">
+                            <label for="Mob">Mobile Number:</label>
+                            <input type="text" id="mobile" name="mobile" class="form-control"
+                                placeholder=" Mobile Number " style="padding: 10px;">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-md-12">
+                        <div class="form-group">
+                            <label for="Web">Website URL:</label>
+                            <input type="text" id="url" name="url" class="form-control"
+                                placeholder="Website URL">
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-lg-6 col-md-12">
+                        <div class="form-group">
+                            <label>Password</label>
+                            <div class="position-relative">
+                                <input type="password" class="form-control" name="password" value=""
+                                    placeholder="Password" id="pass" required>
+                                <span class="eye-icon-box">
+                                    <span class="eye-icon">
+                                        <i class="fas fa-eye" id="toggle-password"></i>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-md-12">
+                        <div class="form-group">
+                            <label>Confirm Password</label>
+                            <div class="position-relative">
+                                <input type="password" class="form-control" name="password_confirmation"
+                                    value="" placeholder="Confirm Password" id="password-input-con" required>
+                                <span class="eye-icon-box">
+                                    <span class="eye-icon">
+                                        <i class="fas fa-eye" id="toggleCon-password"></i>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
+                <div class="form-group" style="text-align: center;">
+                    {{-- <a href="updateInfo.html"> --}}
+                    <button type="submit" class="btn btn-primary">Signn
+                        Up</button>
+                    {{-- </a> --}}
+                </div>
+
+
+            </form>
+
+
+
+
+
+
+
+
+
         </div>
     </div>
 
