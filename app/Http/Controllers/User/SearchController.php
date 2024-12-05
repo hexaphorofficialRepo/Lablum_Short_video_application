@@ -490,7 +490,52 @@ class SearchController extends Controller
 }
 
 
-   public function searchUsers(Request $request, $user_id = null)
+//    public function searchUsers(Request $request, $user_id = null)
+// {
+//     try {
+//         $searchQuery = $request->input('search_input');
+
+//         // If search query is empty, return an error response
+//         if (!$searchQuery) {
+//             return response()->json(['message' => 'Search query is empty'], 400);
+//         }
+
+//         // Get the IDs of users who have blocked the searching user
+//         $blockedByUserIds = $user_id ? Blockuser::where('block_id', $user_id)->pluck('user_id') : collect();
+
+//         // Search users based on the provided parameters, excluding those who have blocked the searching user and users marked as deleted
+//         $users = User::whereNotIn('user_id', $blockedByUserIds)
+//             ->where('deleted', 0) // Exclude users with deleted = 1
+//             ->where(function ($query) use ($searchQuery) {
+//                 $query->where('fname', 'like', "%$searchQuery%")
+//                     ->orWhere('lname', 'like', "%$searchQuery%")
+//                     ->orWhere('username', 'like', "%$searchQuery%")
+//                     ->orWhere('mobile', 'like', "%$searchQuery%");
+//             })
+//             ->get();
+
+//         // Format response data
+//         $formattedUsers = $users->map(function ($user) {
+//             // Check verification status for the user
+//             $verification = Verify::where('user_id', $user->user_id)->first();
+//             $officialStatus = $verification ? ($verification->status == 1 ? 1 : 2) : 0;
+
+//             return [
+//                 'user_id' => $user->user_id,
+//                 'username' => $user->username,
+//                 'fullname' => $user->fname . ' ' . $user->lname,
+//                 'user_dp' => $user->user_dp ? asset("storage/profile_pic/{$user->user_id}/{$user->user_dp}") : null,
+//                 'official_status' => $officialStatus,
+//             ];
+//         });
+
+//         return response()->json(['message' => 'Users retrieved successfully', 'data' => $formattedUsers], 200);
+//     } catch (\Exception $e) {
+//         return response()->json(['message' => 'Failed to retrieve users', 'error' => $e->getMessage()], 500);
+//     }
+// }
+
+public function searchUsers(Request $request, $user_id = null)
 {
     try {
         $searchQuery = $request->input('search_input');
@@ -500,41 +545,46 @@ class SearchController extends Controller
             return response()->json(['message' => 'Search query is empty'], 400);
         }
 
-        // Get the IDs of users who have blocked the searching user
-        $blockedByUserIds = $user_id ? Blockuser::where('block_id', $user_id)->pluck('user_id') : collect();
+        // If search query has less than 3 characters, return suggestions
+        if (strlen($searchQuery) >= 3) {
+            // Get the IDs of users who have blocked the searching user
+            $blockedByUserIds = $user_id ? Blockuser::where('block_id', $user_id)->pluck('user_id') : collect();
 
-        // Search users based on the provided parameters, excluding those who have blocked the searching user and users marked as deleted
-        $users = User::whereNotIn('user_id', $blockedByUserIds)
-            ->where('deleted', 0) // Exclude users with deleted = 1
-            ->where(function ($query) use ($searchQuery) {
-                $query->where('fname', 'like', "%$searchQuery%")
-                    ->orWhere('lname', 'like', "%$searchQuery%")
-                    ->orWhere('username', 'like', "%$searchQuery%")
-                    ->orWhere('mobile', 'like', "%$searchQuery%");
-            })
-            ->get();
+            // Search users based on the provided parameters, excluding those who have blocked the searching user and users marked as deleted
+            $users = User::whereNotIn('user_id', $blockedByUserIds)
+                ->where('deleted', 0) // Exclude users with deleted = 1
+                ->where(function ($query) use ($searchQuery) {
+                    $query->where('fname', 'like', "%$searchQuery%")
+                        ->orWhere('lname', 'like', "%$searchQuery%")
+                        ->orWhere('username', 'like', "%$searchQuery%")
+                        ->orWhere('mobile', 'like', "%$searchQuery%");
+                })
+                ->limit(10) // Limit to 10 suggestions
+                ->get();
 
-        // Format response data
-        $formattedUsers = $users->map(function ($user) {
-            // Check verification status for the user
-            $verification = Verify::where('user_id', $user->user_id)->first();
-            $officialStatus = $verification ? ($verification->status == 1 ? 1 : 2) : 0;
+            // Format response data
+            $formattedUsers = $users->map(function ($user) {
+                // Check verification status for the user
+                $verification = Verify::where('user_id', $user->user_id)->first();
+                $officialStatus = $verification ? ($verification->status == 1 ? 1 : 2) : 0;
 
-            return [
-                'user_id' => $user->user_id,
-                'username' => $user->username,
-                'fullname' => $user->fname . ' ' . $user->lname,
-                'user_dp' => $user->user_dp ? asset("storage/profile_pic/{$user->user_id}/{$user->user_dp}") : null,
-                'official_status' => $officialStatus,
-            ];
-        });
+                return [
+                    'user_id' => $user->user_id,
+                    'username' => $user->username,
+                    'fullname' => $user->fname . ' ' . $user->lname,
+                    'user_dp' => $user->user_dp ? asset("storage/profile_pic/{$user->user_id}/{$user->user_dp}") : null,
+                    'official_status' => $officialStatus,
+                ];
+            });
 
-        return response()->json(['message' => 'Users retrieved successfully', 'data' => $formattedUsers], 200);
+            return response()->json(['message' => 'Users retrieved successfully', 'data' => $formattedUsers], 200);
+        } else {
+            return response()->json(['message' => 'Please enter at least 3 characters to search'], 400);
+        }
     } catch (\Exception $e) {
         return response()->json(['message' => 'Failed to retrieve users', 'error' => $e->getMessage()], 500);
     }
 }
-
 
     
 

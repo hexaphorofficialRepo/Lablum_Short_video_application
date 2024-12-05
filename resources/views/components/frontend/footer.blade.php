@@ -18,7 +18,7 @@
     <div class="tg-footer-main pb-70">
         <div class="container custom-container">
             <div class="row">
-                <div class="col-xl-3 col-lg-3 col-md-6">
+                <div class="col-xl-6 col-lg-6 col-md-6">
                     <div class="tg-footer-widget footer-col-1 mb-30">
                         <div class="tg-footer-widget-logo pb-15">
                             <a href="{{ route('frontend.home') }}"><img
@@ -44,7 +44,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-2 col-lg-3 col-md-6 col-sm-6">
+                <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6">
                     <div class="tg-footer-widget footer-col-2 mb-30">
                         <h4 class="tg-footer-widget-title mb-25">Our Company</h4>
                         <div class="tg-footer-widget-link">
@@ -63,7 +63,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-2 col-lg-2 col-md-5 col-sm-6">
+                <div class="col-xl-3 col-lg-3 col-md-5 col-sm-6">
                     <div class="tg-footer-widget footer-col-3 mb-30">
                         <h4 class="tg-footer-widget-title mb-25">Services</h4>
                         <div class="tg-footer-widget-link">
@@ -87,7 +87,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-5 col-lg-4 col-md-7">
+                {{-- <div class="col-xl-5 col-lg-4 col-md-7">
                     <div class="tg-footer-widget footer-col-4 mb-30">
                         <h2 class="tg-footer-widget-submit-title" style="margin-top:45px">Get Latest Updates <br> and big deals</h2>
                         <div class="tg-footer-widget-submit-wrap">
@@ -129,7 +129,7 @@
 
 
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>
