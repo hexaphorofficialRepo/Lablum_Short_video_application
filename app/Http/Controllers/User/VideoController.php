@@ -86,8 +86,14 @@ public function Poststore(Request $request, $user_id)
         $videoFileName = $videoFile->storeAs('post', $uniqueVideoName, 's3'); // Store the video file with the unique filename in AWS S3
 
         // Store thumbnail
-        $thumbnailPath = $thumbnailFile->store('public/thumbnail');
-        $thumbnailFileName = basename($thumbnailPath);
+        $thumbnailFolder = public_path('thumbnail'); // Path to the 'thumbnail' folder inside 'public'
+        if (!file_exists($thumbnailFolder)) {
+            mkdir($thumbnailFolder, 0777, true); // Create the folder if it doesn't exist
+        }
+
+        $thumbnailName = 'thumb_' . $timestamp . '_' . $randomString . '.' . $thumbnailFile->getClientOriginalExtension();
+        $thumbnailFile->move($thumbnailFolder, $thumbnailName); // Move the thumbnail to the 'thumbnail' folder
+        $thumbnailPath = 'thumbnail/' . $thumbnailName; // Relative path to the thumbnail
 
         // Create post
         $post = Post::create([
@@ -96,12 +102,12 @@ public function Poststore(Request $request, $user_id)
             'length' => $request->input('length'),
             'description' => $request->input('description'),
             'video' => $videoFileName,
-            'thumbnail' => $thumbnailFileName,
+            'thumbnail' => $thumbnailPath,
         ]);
 
         // Form complete URLs
         $videoUrl = Storage::disk('s3')->url($videoFileName);
-        $thumbnailUrl = url('storage/thumbnail/' . $thumbnailFileName);
+        $thumbnailUrl = url($thumbnailPath);
 
         // Associate tags with the post if tags are provided
         $tagUserIds = [];
@@ -244,7 +250,7 @@ public function getAllPosts($user_id = null, Request $request)
                 $post->video = Storage::disk('s3')->url($post->video);
             }
             if (isset($post->thumbnail)) {
-                $post->thumbnail = asset("storage/thumbnail/{$post->thumbnail}");
+                $post->thumbnail = asset($post->thumbnail);
             }
             $post->like_count = $post->likes ? $post->likes->count() : 0;
             $post->comment_count = $post->comments()->count();

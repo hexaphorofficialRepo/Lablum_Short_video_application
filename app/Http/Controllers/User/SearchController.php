@@ -41,7 +41,7 @@ class SearchController extends Controller
     
             $posts->each(function ($post) use ($user_id) {
                 $post->video = Storage::disk('s3')->url("{$post->video}");
-                $post->thumbnail = asset("storage/thumbnail/{$post->thumbnail}");
+                $post->thumbnail = asset($post->thumbnail);
                 $post->like_count = $post->likes()->count();
                 $post->comment_count = $post->comments()->count();
                 $post->share_count = $post->shares()->count();
