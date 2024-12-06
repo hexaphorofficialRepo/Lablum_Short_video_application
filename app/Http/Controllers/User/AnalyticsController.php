@@ -379,7 +379,7 @@ public function getTopPostsByViews(Request $request)
         return [
             'post_id' => $post->id,
             'title' => $post->title,
-            'thumbnail' => asset($post->thumbnail),
+            'thumbnail' => $post->thumbnail = asset("storage/thumbnail/{$post->thumbnail}"),
             'view_count' => $viewCount,
         ];
     });

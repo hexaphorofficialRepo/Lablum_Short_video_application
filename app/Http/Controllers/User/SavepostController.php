@@ -181,7 +181,7 @@ public function getUserSavedPosts($user_id, Request $request)
 
             // Format video and thumbnail URLs
             $post->video = isset($post->video) ? Storage::disk('s3')->url($post->video) : null;
-            $post->thumbnail = $post->thumbnail ? asset($post->thumbnail) : null;
+            $post->thumbnail = $post->thumbnail ? asset("storage/thumbnail/{$post->thumbnail}") : null;
 
             // Format user details
             $post->username = $post->user->username;

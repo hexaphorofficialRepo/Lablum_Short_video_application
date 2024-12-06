@@ -86,14 +86,8 @@ public function Poststore(Request $request, $user_id)
         $videoFileName = $videoFile->storeAs('post', $uniqueVideoName, 's3'); // Store the video file with the unique filename in AWS S3
 
         // Store thumbnail
-        $thumbnailFolder = public_path('thumbnail'); // Path to the 'thumbnail' folder inside 'public'
-        if (!file_exists($thumbnailFolder)) {
-            mkdir($thumbnailFolder, 0777, true); // Create the folder if it doesn't exist
-        }
-
-        $thumbnailName = 'thumb_' . $timestamp . '_' . $randomString . '.' . $thumbnailFile->getClientOriginalExtension();
-        $thumbnailFile->move($thumbnailFolder, $thumbnailName); // Move the thumbnail to the 'thumbnail' folder
-        $thumbnailPath = 'thumbnail/' . $thumbnailName; // Relative path to the thumbnail
+        $thumbnailPath = $thumbnailFile->store('public/thumbnail');
+        $thumbnailFileName = basename($thumbnailPath);
 
         // Create post
         $post = Post::create([
@@ -102,12 +96,12 @@ public function Poststore(Request $request, $user_id)
             'length' => $request->input('length'),
             'description' => $request->input('description'),
             'video' => $videoFileName,
-            'thumbnail' => $thumbnailPath,
+            'thumbnail' => $thumbnailFileName,
         ]);
 
         // Form complete URLs
         $videoUrl = Storage::disk('s3')->url($videoFileName);
-        $thumbnailUrl = url($thumbnailPath);
+        $thumbnailUrl = url('storage/thumbnail/' . $thumbnailFileName);
 
         // Associate tags with the post if tags are provided
         $tagUserIds = [];

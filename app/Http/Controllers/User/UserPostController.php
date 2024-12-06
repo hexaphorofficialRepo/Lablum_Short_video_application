@@ -135,7 +135,7 @@ public function getUserPosts($user_id, $view_id = null, Request $request)
         // Process each post to include additional information
         $posts->getCollection()->transform(function ($post) use ($user_id, $view_id) {
             $post->video = Storage::disk('s3')->url($post->video);
-            $post->thumbnail = asset($post->thumbnail);
+            $post->thumbnail = asset("storage/thumbnail/{$post->thumbnail}");
             $post->like_count = $post->likes()->count();
             $post->comment_count = $post->comments()->count();
             $post->share_count = $post->shares()->count();
